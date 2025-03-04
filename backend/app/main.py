@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database.db import db
-from app.sentiment.sentiment import analyze_sentiment_vader, analyze_sentiment_transformers
+from database.db import db
+from sentiment.sentiment import analyze_sentiment_vader, analyze_sentiment_transformers
 
 app = FastAPI()
 
