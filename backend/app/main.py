@@ -1,31 +1,19 @@
-import motor.motor_asyncio
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from transformers import pipeline
-import requests
+from app.database.db import db
+from app.sentiment.sentiment import analyze_sentiment_vader, analyze_sentiment_transformers
 
 app = FastAPI()
 
-# Load pre-trained sentiment analysis model
-sentiment_pipeline = pipeline("sentiment-analysis")
-
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017')
-db = client["wanderwise_db"]
-
-analyzer = SentimentIntensityAnalyzer()
-
 @app.post("/analyze-sentiment")
 async def analyze_sentiment(review: str):
-    sentiment_score = analyzer.polarity_scores(review)
-    sentiment = "positive" if sentiment_score["compound"] > 0 else "negative" if sentiment_score["compound"] < 0 else "neutral"
+    sentiment, sentiment_score = analyze_sentiment_vader(review)
     return {"sentiment": sentiment, "score": sentiment_score}
 
 @app.post("/save-review")
 async def save_review(review: str):
-    # Analyze sentiment
-    sentiment_score = analyzer.polarity_scores(review)
-    sentiment = "positive" if sentiment_score["compound"] > 0 else "negative" if sentiment_score["compound"] < 0 else "neutral"
+    # Analyze sentiment using Vader
+    sentiment, sentiment_score = analyze_sentiment_vader(review)
     
     # Store the review and sentiment data
     review_data = {
@@ -67,7 +55,7 @@ def get_sentiment(destination: str):
         f"{destination} has a great cultural atmosphere."
     ]
 
-    # Analyze sentiment for each review
-    results = [{"review": review, "sentiment": sentiment_pipeline(review)[0]} for review in reviews]
+    # Analyze sentiment for each review using the transformer model
+    results = [{"review": review, "sentiment": analyze_sentiment_transformers(review)} for review in reviews]
     
     return {"destination": destination, "reviews": results}
