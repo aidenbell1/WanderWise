@@ -1,0 +1,19 @@
+digraph {
+	A [label="Host Party: Inside or Outside?"]
+	B [label="Host Outside"]
+	C [label="Host Inside"]
+	A -> B [label=Outside]
+	A -> C [label=Inside]
+	D [label="Weather Stays Dry
+(Guests Comfortable)" shape=box]
+	E [label="It Rains
+(Party Ruined)" shape=box]
+	B -> D [label="No Rain"]
+	B -> E [label=Rain]
+	F [label="Weather Stays Dry
+(Guests Cramped)" shape=box]
+	G [label="It Rains
+(Guests Stay Dry)" shape=box]
+	C -> F [label="No Rain"]
+	C -> G [label=Rain]
+}
